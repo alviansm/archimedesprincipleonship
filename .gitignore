@@ -1,0 +1,38 @@
+# Qt Creator user/session/workspace files
+*.user
+*.user.*
+*.pro.user
+*.pro.user.*
+
+# Build directories (adjust if your build folder name differs)
+build/
+Build/
+build-*/
+
+# CMake-generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Qt generated UI and MOC files (if any not handled by CMake)
+*.autosave
+*.moc
+*.qrc
+*.obj
+*.o
+
+# Qt translation files (compiled)
+*.qm
+
+# Backup/swap files
+*~
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
