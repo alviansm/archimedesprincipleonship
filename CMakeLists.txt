@@ -30,11 +30,20 @@ set(PROJECT_SOURCES
     ${TS_FILES}
 )
 
+# box2d
+add_subdirectory(third_party/box2d)
+
 # Add executable
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ArchimedesPrincipleOnShip
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        src/ui/vesselinputform.ui
+        src/ui/vesselinputwidget.ui
+        src/widgets/cargoiconwidget.h src/widgets/cargoiconwidget.cpp
+        src/physics/physicsengine.h src/physics/physicsengine.cpp
+        src/physics/cargobody.h src/physics/cargobody.cpp
+        src/physics/physicsutils.h src/physics/physicsutils.cpp
     )
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()
@@ -42,8 +51,14 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
+# Target box2d library
+target_include_directories(ArchimedesPrincipleOnShip PRIVATE
+    ${PROJECT_SOURCE_DIR}/third_party/box2d/include
+    ${PROJECT_SOURCE_DIR}/src
+)
+
 # Link Qt libraries
-target_link_libraries(ArchimedesPrincipleOnShip PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(ArchimedesPrincipleOnShip PRIVATE Qt${QT_VERSION_MAJOR}::Widgets box2d)
 
 # macOS bundle metadata
 if(${QT_VERSION} VERSION_LESS 6.1.0)
