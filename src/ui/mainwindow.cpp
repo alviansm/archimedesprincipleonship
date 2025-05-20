@@ -26,6 +26,29 @@ MainWindow::MainWindow(QWidget *parent)
 
         form->exec();
     });
+
+    QToolBar* cargoToolBar = new QToolBar("Cargo Items", this);
+    cargoToolBar->setIconSize(QSize(24, 24));  // match widget size
+    cargoToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);  // if you want labels
+    cargoToolBar->setFixedWidth(40);  // or enough for widget + margin
+    addToolBar(Qt::LeftToolBarArea, cargoToolBar);
+
+    for (int i = 1; i <= 3; ++i) {
+        CargoItemWidget* item = new CargoItemWidget(QString("Cargo %1").arg(i), false);
+
+        QWidgetAction* cargoAction = new QWidgetAction(this);
+        cargoAction->setDefaultWidget(item);
+
+        cargoToolBar->addAction(cargoAction);
+
+        cargoToolBar->setStyleSheet(R"(
+        QToolBar {
+            background: #f0f0f0;
+            spacing: 10px;
+            padding: 10px;
+            }
+        )");
+    }
 }
 
 MainWindow::~MainWindow()

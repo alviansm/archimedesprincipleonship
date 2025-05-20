@@ -44,6 +44,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/physics/physicsengine.h src/physics/physicsengine.cpp
         src/physics/cargobody.h src/physics/cargobody.cpp
         src/physics/physicsutils.h src/physics/physicsutils.cpp
+        src/widgets/cargoitemwidget.h src/widgets/cargoitemwidget.cpp
     )
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()

@@ -2,13 +2,13 @@
 
 PhysicsEngine::PhysicsEngine()
 {
-    b2WorldDef def = b2DefaultWorldDef();  // use this, not `{}` or custom
+    b2WorldDef def = b2DefaultWorldDef();
     def.gravity = {0.0f, 9.8f};
     m_worldId = b2CreateWorld(&def);
 
     // Create ground
     b2BodyDef groundDef = b2DefaultBodyDef();
-    groundDef.position = {0.0f, 15.0f};  // higher so we can see fall
+    groundDef.position = {0.0f, 15.0f};
     b2BodyId ground = b2CreateBody(m_worldId, &groundDef);
 
     b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -16,35 +16,13 @@ PhysicsEngine::PhysicsEngine()
     b2CreatePolygonShape(ground, &shapeDef, &groundShape);
 }
 
-
-// PhysicsEngine::PhysicsEngine()
-// {
-//     b2WorldDef def = {};
-//     def.gravity = {0.0f, 9.8f};
-
-//     m_worldId = b2CreateWorld(&def);
-
-//     // Create static ground
-//     b2BodyDef groundDef = b2DefaultBodyDef();
-//     // groundDef.position = {5.0f, 15.0f};
-//     groundDef.position = {0.0f, 10.0f};
-
-
-//     b2BodyId ground = b2CreateBody(m_worldId, &groundDef);
-
-//     b2ShapeDef shapeDef = b2DefaultShapeDef();
-//     b2Polygon groundBox = b2MakeBox(50.0f, 1.0f);
-//     b2CreatePolygonShape(ground, &shapeDef, &groundBox);
-// }
-
 void PhysicsEngine::step(float timeStep, int subSteps) {
     b2World_Step(m_worldId, timeStep, subSteps);
     b2Vec2 g = b2World_GetGravity(m_worldId);
-    qDebug() << "Gravity:" << g.x << g.y;
-    if (!m_dynamicBodies.empty()) {
-        b2Vec2 pos = b2Body_GetPosition(m_dynamicBodies[0]);
-        qDebug() << "Body y:" << pos.y;
-    }
+    // if (!m_dynamicBodies.empty()) {
+    //     b2Vec2 pos = b2Body_GetPosition(m_dynamicBodies[0]);
+    //     qDebug() << "Body y:" << pos.y;
+    // }
 }
 
 void PhysicsEngine::addTestBox() {
@@ -65,9 +43,6 @@ void PhysicsEngine::addTestBox() {
     b2CreatePolygonShape(bodyId, &shapeDef, &box);
 
     m_dynamicBodies.push_back(bodyId);
-
-    float mass = b2Body_GetMass(bodyId);
-    qDebug() << "Mass:" << mass;  // Must be > 0
 }
 
 std::vector<b2BodyId> PhysicsEngine::dynamicBodies() const {

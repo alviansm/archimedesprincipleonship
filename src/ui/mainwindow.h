@@ -2,7 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QVBoxLayout>
+#include <QWidgetAction>
+#include <QToolBar>
+
 #include "../widgets/stabilityvisualwidget.h"
+#include "../widgets/cargoitemwidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
