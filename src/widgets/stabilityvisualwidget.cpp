@@ -3,6 +3,9 @@
 #include <QMouseEvent>
 #include <QPen>
 #include <QBrush>
+#include <QPropertyAnimation>
+
+#include "./widgets/cargoitemwidget.h"
 
 StabilityVisualWidget::StabilityVisualWidget(QWidget *parent)
     : QWidget(parent)
@@ -30,6 +33,37 @@ void StabilityVisualWidget::updateStability()
     m_engine.setVessel(m_vessel);
     m_engine.compute();
     update(); // repaint widget
+}
+
+QPoint StabilityVisualWidget::findNearestValidPosition(CargoItemWidget *cargo, QPoint desiredPos)
+{
+    QRect targetRect(desiredPos, cargo->size());
+
+    // Try down-stepping to find lowest non-overlapping position
+    const int maxY = height() - cargo->height();
+
+    for (int y = desiredPos.y(); y <= maxY; y += 1) {
+        QRect testRect(QPoint(desiredPos.x(), y), cargo->size());
+
+        bool collision = false;
+
+        for (QObject* child : children()) {
+            auto* other = qobject_cast<CargoItemWidget*>(child);
+            if (other && other != cargo) {
+                QRect otherRect = QRect(other->pos(), other->size());
+                if (testRect.intersects(otherRect)) {
+                    collision = true;
+                    break;
+                }
+            }
+        }
+
+        if (collision) {
+            return QPoint(desiredPos.x(), y - 1);  // just before collision
+        }
+    }
+
+    return QPoint(desiredPos.x(), maxY);
 }
 
 void StabilityVisualWidget::animateWater()
@@ -97,12 +131,29 @@ void StabilityVisualWidget::dropEvent(QDropEvent* event)
 
     QString label = event->mimeData()->text();
 
-    // Create a new cargo item
-    QPoint snapped = CargoItemWidget::snapToGrid(event->position().toPoint());
+    QPoint rawPos = event->position().toPoint();
+    QPoint snapped = CargoItemWidget::snapToGrid(rawPos);
+
+    // Create cargo first
     CargoItemWidget* newCargo = new CargoItemWidget(label, true, this);
-    newCargo->move(snapped);
+
+    // Now calculate valid position
+    QPoint validPos = findNearestValidPosition(newCargo, snapped);
+
+    newCargo->move(snapped);  // Start at snapped position (user's drop intent)
+
+    QPropertyAnimation* anim = new QPropertyAnimation(newCargo, "pos");
+    anim->setDuration(300);  // 300 ms fall
+    anim->setStartValue(snapped);
+    anim->setEndValue(validPos);
+    anim->setEasingCurve(QEasingCurve::OutBounce);  // Optional: feels physical
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
+
     newCargo->show();
     newCargo->raise();
 
     event->acceptProposedAction();
+
+    updateStability();  // Optional but recommended here too
 }
+

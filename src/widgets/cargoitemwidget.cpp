@@ -1,5 +1,7 @@
 #include "cargoitemwidget.h"
 
+#include <QPropertyAnimation>
+
 const int GRID_SIZE = 4;
 
 CargoItemWidget::CargoItemWidget(const QString& label, bool isMovable, QWidget* parent)
@@ -52,5 +54,28 @@ void CargoItemWidget::mouseMoveEvent(QMouseEvent* event)
             drag->exec(Qt::CopyAction);
         }
     }
+}
+
+void CargoItemWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (m_isMovable) {
+        if (auto* parent = qobject_cast<StabilityVisualWidget*>(parentWidget())) {
+            QPoint current = pos();
+            QPoint target = parent->findNearestValidPosition(this, current);
+
+            if (current != target) {
+                QPropertyAnimation* anim = new QPropertyAnimation(this, "pos");
+                anim->setDuration(300);
+                anim->setStartValue(current);
+                anim->setEndValue(target);
+                anim->setEasingCurve(QEasingCurve::OutBounce);
+                anim->start(QAbstractAnimation::DeleteWhenStopped);
+            }
+
+            parent->updateStability();
+        }
+    }
+
+    QLabel::mouseReleaseEvent(event);
 }
 

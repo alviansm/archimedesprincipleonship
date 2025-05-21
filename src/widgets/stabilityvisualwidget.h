@@ -13,8 +13,8 @@
 
 #include "../app/stabilityengine.h"
 #include "../physics/physicsengine.h"
-#include "../widgets/cargoitemwidget.h"
 
+class CargoItemWidget;
 class StabilityVisualWidget : public QWidget
 {
     Q_OBJECT
@@ -24,6 +24,7 @@ public:
 
     void setVessel(const Vessel &vessel);
     void updateStability();
+    QPoint findNearestValidPosition(CargoItemWidget* cargo, QPoint desiredPos);
 
     Vessel vessel() const { return m_vessel; }
 
@@ -33,6 +34,7 @@ public slots:
 signals:
     void clicked();  // Signal to open input dialog
 
+// QWidget interface
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -56,6 +58,7 @@ private:
     // Physics Engine
     PhysicsEngine m_physics;
     QTimer* m_timer;
+
 };
 
 #endif // STABILITYVISUALWIDGET_H
